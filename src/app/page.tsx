@@ -1,101 +1,314 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  IconButton,
+  TablePagination,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Alert,
+} from '@mui/material'; // Added TableSortLabel
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+
+const colors = {
+  background: '#0F0F0F',
+  textPrimary: '#fff',
+  textSecondary: '#ccc',
+  tableBackground: '#0F0F0F',
+};
+
+// Define sort interface
+interface SortConfig {
+  key: string;
+  direction: 'asc' | 'desc';
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [users, setUsers] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentUser, setCurrentUser] = useState({ fullName: '', email: '', role: '', _id: '' });
+  const [nameSearch, setNameSearch] = useState('');
+  const [emailSearch, setEmailSearch] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fullName', direction: 'asc' }); // Default sort
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  useEffect(() => {
+    fetchUsers();
+  }, [page, rowsPerPage, nameSearch, emailSearch, sortConfig]);
+
+  const fetchUsers = async () => {
+    const params = new URLSearchParams({
+      page: (page + 1).toString(),
+      limit: rowsPerPage.toString(),
+      name: nameSearch,
+      email: emailSearch,
+      sort: sortConfig.key,
+      direction: sortConfig.direction,
+    }).toString();
+    const res = await fetch(`/api/users?${params}`);
+    const data = await res.json();
+    if (res.ok) {
+      setUsers(data.users || []);
+      setTotal(data.total || 0);
+    } else {
+      console.error('Failed to fetch users:', data.error);
+    }
+  };
+
+  const handleOpenDialog = (user = { fullName: '', email: '', role: '', _id: '' }) => {
+    setCurrentUser(user);
+    setOpenDialog(true);
+    setErrorMessage(null);
+  };
+
+  const validateFields = () => {
+    if (!currentUser.fullName.trim()) return 'Full Name is required';
+    if (!currentUser.email.trim()) {
+      return 'Email is required';
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(currentUser.email.trim())) {
+      return 'Invalid email format';
+    }
+    if (!currentUser.role.trim()) return 'Role is required';
+    return null;
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setCurrentUser({ fullName: '', email: '', role: '', _id: '' });
+  };
+
+  const saveUser = async () => {
+    const validationError = validateFields();
+    if (validationError) {
+      setErrorMessage(validationError);
+      return;
+    }
+    try {
+      const userData = currentUser._id
+        ? { _id: currentUser._id, fullName: currentUser.fullName, email: currentUser.email, role: currentUser.role }
+        : { fullName: currentUser.fullName, email: currentUser.email, role: currentUser.role };
+      const method = currentUser._id ? 'PUT' : 'POST';
+      const res = await fetch('/api/users', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save user');
+      handleCloseDialog();
+      fetchUsers();
+    } catch (error) {
+      console.error('Error saving user:', error.message);
+      setErrorMessage(error.message);
+    }
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      const res = await fetch('/api/users', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        fetchUsers();
+      } else {
+        console.error('Failed to delete user:', data.error);
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error.message);
+    }
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const requestSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  return (
+    <Container
+      maxWidth="md"
+      sx={{ mt: 4, minHeight: '100vh', padding: 2, color: colors.textPrimary }}
+    >
+      <Typography variant="h4" gutterBottom sx={{ color: colors.textPrimary }}>
+        Admin Users
+      </Typography>
+      <div style={{ display: 'flex', gap: 8, mb: 2 }}>
+        <TextField
+          label="Search by Name"
+          value={nameSearch}
+          onChange={(e) => setNameSearch(e.target.value)}
+          variant="outlined"
+          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, flex: 1 }}
+        />
+        <TextField
+          label="Search by Email"
+          value={emailSearch}
+          onChange={(e) => setEmailSearch(e.target.value)}
+          variant="outlined"
+          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, flex: 1 }}
+        />
+        <Button variant="contained" onClick={() => handleOpenDialog()} sx={{ color: colors.textPrimary }}>
+          Add User
+        </Button>
+      </div>
+      <Table sx={{ backgroundColor: colors.tableBackground }}>
+        <TableHead>
+          <TableRow sx={{ height: '58px' }}>
+            <TableCell sx={{ color: colors.textPrimary }}>
+              <TableSortLabel
+                active={sortConfig.key === 'fullName'}
+                direction={sortConfig.key === 'fullName' ? sortConfig.direction : 'asc'}
+                onClick={() => requestSort('fullName')}
+                sx={{ color: colors.textPrimary, '&:hover': { color: colors.textSecondary },
+                '&.Mui-active': { color: colors.textPrimary },
+               }}
+              >
+                Full Name
+              </TableSortLabel>
+            </TableCell>
+            <TableCell sx={{ color: colors.textPrimary }}>
+              <TableSortLabel
+                active={sortConfig.key === 'email'}
+                direction={sortConfig.key === 'email' ? sortConfig.direction : 'asc'}
+                onClick={() => requestSort('email')}
+                sx={{ color: colors.textPrimary, '&:hover': { color: colors.textSecondary },
+                '&.Mui-active': { color: colors.textPrimary },
+              }}
+              >
+                Email
+              </TableSortLabel>
+            </TableCell>
+            <TableCell sx={{ color: colors.textPrimary }}>
+              <TableSortLabel
+                active={sortConfig.key === 'role'}
+                direction={sortConfig.key === 'role' ? sortConfig.direction : 'asc'}
+                onClick={() => requestSort('role')}
+                sx={{ color: colors.textPrimary, '&:hover': { color: colors.textSecondary },
+                '&.Mui-active': { color: colors.textPrimary },
+              }}
+              >
+                Role
+              </TableSortLabel>
+            </TableCell>
+            <TableCell sx={{ color: colors.textPrimary }}>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user._id} sx={{ height: '58px' }}>
+              <TableCell sx={{ color: colors.textPrimary }}>{user.fullName}</TableCell>
+              <TableCell sx={{ color: colors.textPrimary }}>{user.email}</TableCell>
+              <TableCell sx={{ color: colors.textPrimary }}>{user.role}</TableCell>
+              <TableCell>
+                <IconButton onClick={() => handleOpenDialog(user)} sx={{ color: colors.textPrimary }}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => deleteUser(user._id.toString())} sx={{ color: colors.textPrimary }}>
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={total}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{ color: colors.textPrimary, display: 'flex', justifyContent: 'center' }}
+      />
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        sx={{ '& .MuiDialog-paper': { backgroundColor: colors.background, color: colors.textPrimary } }}
+      >
+        <DialogTitle sx={{ color: colors.textPrimary, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {currentUser._id ? 'Edit User' : 'Add User'}
+          <IconButton onClick={handleCloseDialog} sx={{ color: colors.textPrimary }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {errorMessage && (
+            <Alert severity="error" sx={{ mb: 2, backgroundColor: colors.background, color: colors.textPrimary }} onClose={() => setErrorMessage(null)}>
+              {errorMessage}
+            </Alert>
+          )}
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Full Name"
+            type="text"
+            fullWidth
+            value={currentUser.fullName}
+            onChange={(e) => setCurrentUser({ ...currentUser, fullName: e.target.value })}
+            sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary } }}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <TextField
+            margin="dense"
+            label="Email"
+            type="email"
+            fullWidth
+            value={currentUser.email}
+            onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
+            sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary } }}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <TextField
+            margin="dense"
+            label="Role"
+            type="text"
+            fullWidth
+            value={currentUser.role}
+            onChange={(e) => setCurrentUser({ ...currentUser, role: e.target.value })}
+            sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary } }}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} sx={{ color: colors.textPrimary }}>
+            Cancel
+          </Button>
+          <Button onClick={saveUser} variant="contained">
+            {currentUser._id ? 'Save' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 }
