@@ -6,23 +6,15 @@ import {
   Typography,
   TextField,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  IconButton,
-  TablePagination,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Alert,
-} from '@mui/material'; // Added TableSortLabel
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+  IconButton,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import TableComponent from './components/TableComponent';
 
 const colors = {
   background: '#0F0F0F',
@@ -31,7 +23,6 @@ const colors = {
   tableBackground: '#0F0F0F',
 };
 
-// Define sort interface
 interface SortConfig {
   key: string;
   direction: 'asc' | 'desc';
@@ -47,13 +38,15 @@ export default function Home() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fullName', direction: 'asc' }); // Default sort
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fullName', direction: 'asc' });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchUsers();
   }, [page, rowsPerPage, nameSearch, emailSearch, sortConfig]);
 
   const fetchUsers = async () => {
+    setIsLoading(true);
     const params = new URLSearchParams({
       page: (page + 1).toString(),
       limit: rowsPerPage.toString(),
@@ -70,6 +63,7 @@ export default function Home() {
     } else {
       console.error('Failed to fetch users:', data.error);
     }
+    setIsLoading(false);
   };
 
   const handleOpenDialog = (user = { fullName: '', email: '', role: '', _id: '' }) => {
@@ -157,6 +151,8 @@ export default function Home() {
     setSortConfig({ key, direction });
   };
 
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <Container
       maxWidth="md"
@@ -184,75 +180,17 @@ export default function Home() {
           Add User
         </Button>
       </div>
-      <Table sx={{ backgroundColor: colors.tableBackground }}>
-        <TableHead>
-          <TableRow sx={{ height: '58px' }}>
-            <TableCell sx={{ color: colors.textPrimary }}>
-              <TableSortLabel
-                active={sortConfig.key === 'fullName'}
-                direction={sortConfig.key === 'fullName' ? sortConfig.direction : 'asc'}
-                onClick={() => requestSort('fullName')}
-                sx={{ color: colors.textPrimary, '&:hover': { color: colors.textSecondary },
-                '&.Mui-active': { color: colors.textPrimary },
-               }}
-              >
-                Full Name
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ color: colors.textPrimary }}>
-              <TableSortLabel
-                active={sortConfig.key === 'email'}
-                direction={sortConfig.key === 'email' ? sortConfig.direction : 'asc'}
-                onClick={() => requestSort('email')}
-                sx={{ color: colors.textPrimary, '&:hover': { color: colors.textSecondary },
-                '&.Mui-active': { color: colors.textPrimary },
-              }}
-              >
-                Email
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ color: colors.textPrimary }}>
-              <TableSortLabel
-                active={sortConfig.key === 'role'}
-                direction={sortConfig.key === 'role' ? sortConfig.direction : 'asc'}
-                onClick={() => requestSort('role')}
-                sx={{ color: colors.textPrimary, '&:hover': { color: colors.textSecondary },
-                '&.Mui-active': { color: colors.textPrimary },
-              }}
-              >
-                Role
-              </TableSortLabel>
-            </TableCell>
-            <TableCell sx={{ color: colors.textPrimary }}>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user._id} sx={{ height: '58px' }}>
-              <TableCell sx={{ color: colors.textPrimary }}>{user.fullName}</TableCell>
-              <TableCell sx={{ color: colors.textPrimary }}>{user.email}</TableCell>
-              <TableCell sx={{ color: colors.textPrimary }}>{user.role}</TableCell>
-              <TableCell>
-                <IconButton onClick={() => handleOpenDialog(user)} sx={{ color: colors.textPrimary }}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => deleteUser(user._id.toString())} sx={{ color: colors.textPrimary }}>
-                  <DeleteIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={total}
-        rowsPerPage={rowsPerPage}
+      <TableComponent
+        users={users}
+        total={total}
         page={page}
+        rowsPerPage={rowsPerPage}
+        sortConfig={sortConfig}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{ color: colors.textPrimary, display: 'flex', justifyContent: 'center' }}
+        onEdit={handleOpenDialog}
+        onDelete={deleteUser}
+        requestSort={requestSort}
       />
       <Dialog
         open={openDialog}
