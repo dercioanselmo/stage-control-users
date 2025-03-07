@@ -20,7 +20,6 @@ const colors = {
   background: '#0F0F0F',
   textPrimary: '#fff',
   textSecondary: '#ccc',
-  tableBackground: '#0F0F0F',
 };
 
 interface SortConfig {
@@ -154,13 +153,14 @@ export default function HomeComponent() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <Container
+    <Container 
       maxWidth="md"
-      sx={{ mt: 4, minHeight: '100vh', padding: 2, color: colors.textPrimary }}
+      sx={{ mt: 4, minHeight: '100vh', padding: 2, color: colors.textPrimary}}
     >
-      <Typography variant="h4" gutterBottom sx={{ color: colors.textPrimary }}>
+      <Typography  width={151} height={33} gutterBottom sx={{ color: colors.textPrimary }}>
         Admin Users
       </Typography>
+      
       <div style={{ display: 'flex', gap: 8, mb: 2 }}>
         <TextField
           label="Search by Name"
