@@ -92,16 +92,16 @@ export default function TableComponent({
                 Role
               </TableSortLabel>
             </TableCell>
-            <TableCell sx={{ color: colors.textPrimary }}>Actions</TableCell>
+            <TableCell sx={{ color: colors.textPrimary, textAlign: 'right', }}>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user._id} sx={{ height: '40px' }}>
+            <TableRow key={user._id} sx={{ height: '20px' }}>
               <TableCell sx={{ color: colors.textPrimary }}>{user.fullName}</TableCell>
               <TableCell sx={{ color: colors.textPrimary }}>{user.email}</TableCell>
               <TableCell sx={{ color: colors.textPrimary }}>{user.role}</TableCell>
-              <TableCell>
+              <TableCell sx={{textAlign: 'right'}}>
                 <IconButton onClick={() => onEdit(user)} sx={{ color: colors.textPrimary }}>
                   <EditIcon />
                 </IconButton>

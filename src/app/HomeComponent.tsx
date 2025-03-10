@@ -14,6 +14,7 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Image from 'next/image'; // Import Image component for the icon
 import TableComponent from './components/TableComponent';
 
 const colors = {
@@ -153,73 +154,113 @@ export default function HomeComponent() {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <Container 
+    <Container
       maxWidth={1344}
-      sx={{ mt: 0, minHeight: '100vh', padding: 2, color: colors.textPrimary, backgroundColor: 'transparent'}}
+      sx={{ mt: 0, minHeight: '100vh', padding: 2, color: colors.textPrimary, backgroundColor: 'transparent' }}
     >
-      <Typography  variant="h5" width={151} height={33} gutterBottom sx={{ color: colors.textPrimary }}>
+      <Typography
+        variant="h5"
+        width={151}
+        height={33}
+        gutterBottom
+        sx={{
+          color: colors.textPrimary,
+          fontSize: '18px',
+          fontWeight: 500,
+          lineHeight: '33px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
         Admin Users
       </Typography>
-      
-      <div style={{ display: 'flex', gap: 8, mb: 2 }}>
-        <TextField
-          label="Search by Name"
-          value={nameSearch}
-          onChange={(e) => setNameSearch(e.target.value)}
-          variant="outlined"
-          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, 
-        
-          width: 348,
-            '& .MuiOutlinedInput-root': {
-              height: 44, 
-              '& fieldset': {
-                borderColor: '#909090',
+
+      <div style={{ display: 'flex', gap: 8, mb: 2, justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <TextField
+            label="Search by Name"
+            value={nameSearch}
+            onChange={(e) => setNameSearch(e.target.value)}
+            variant="outlined"
+            sx={{
+              width: 348,
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                '& fieldset': {
+                  borderColor: '#909090',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#909090',
+                },
               },
-              '&.Mui-focused fieldset': {
-                borderColor: '#909090', // Maintain border color when focused
+              '& .MuiInputBase-input': {
+                color: colors.textPrimary,
+                padding: '10px 14px',
               },
-            },
-            '& .MuiInputBase-input': {
-              color: colors.textPrimary, // Text color
-              padding: '10px 14px', // Adjust padding to fit height
-            },
-            '& .MuiInputLabel-root': {
-              color: colors.textSecondary, // Label color
-              top: '-2px', // Adjust label position to fit height
-            },
-            
-        }}
-        />
-        <TextField
-          label="Search by Email"
-          value={emailSearch}
-          onChange={(e) => setEmailSearch(e.target.value)}
-          variant="outlined"
-          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, 
-        
-          width: 348,
-          '& .MuiOutlinedInput-root': {
-            height: 44, 
-            '& fieldset': {
-              borderColor: '#909090',
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#909090', // Maintain border color when focused
-            },
-          },
-          '& .MuiInputBase-input': {
-            color: colors.textPrimary, // Text color
-            padding: '10px 14px', // Adjust padding to fit height
-          },
-          '& .MuiInputLabel-root': {
-            color: colors.textSecondary, // Label color
-            top: '-2px', // Adjust label position to fit height
-          },
-          
-        }}
-        />
+              '& .MuiInputLabel-root': {
+                color: colors.textSecondary,
+                top: '-2px',
+              },
+            }}
+          />
+          <TextField
+            label="Search by Email"
+            value={emailSearch}
+            onChange={(e) => setEmailSearch(e.target.value)}
+            variant="outlined"
+            sx={{
+              width: 348,
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                '& fieldset': {
+                  borderColor: '#909090',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#909090',
+                },
+              },
+              '& .MuiInputBase-input': {
+                color: colors.textPrimary,
+                padding: '10px 14px',
+              },
+              '& .MuiInputLabel-root': {
+                color: colors.textSecondary,
+                top: '-2px',
+              },
+            }}
+          />
+        </div>
         <Button variant="contained" onClick={() => handleOpenDialog()} sx={{ color: colors.textPrimary }}>
           Add User
+        </Button>
+        <Button
+          variant="contained"
+          sx={{
+            width: 178,
+            height: 40,
+            backgroundColor: '#FFFFFF', // White background
+            color: '#000000', // Black text
+            borderRadius: 30, // Corner radius of 30px
+            opacity: 1, // 100% opacity
+            '&:hover': {
+              backgroundColor: '#FFFFFF', // Maintain white on hover
+              opacity: 0.9, // Slight opacity change on hover (optional)
+            },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4, // Reduced gap between text and icon
+            padding: '0 16px', // Adjust padding to fit content within 178px
+            fontSize: '16px', // Ag Desktop/Buttons/Large font size
+            fontWeight: 600, // Bold weight for Large button text
+            lineHeight: '40px', // Match button height for vertical centering
+            textTransform: 'none', // Remove uppercase transformation
+          }}
+          onClick={() => {}} // Placeholder action (to be implemented later)
+        >
+          Invite User
+          <Image src="/person_add.png" alt="Invite User" width={20} height={20} /> {/* Add person_add.png icon */}
         </Button>
       </div>
       <TableComponent
