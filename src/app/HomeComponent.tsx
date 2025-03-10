@@ -154,10 +154,10 @@ export default function HomeComponent() {
 
   return (
     <Container 
-      maxWidth="md"
-      sx={{ mt: 4, minHeight: '100vh', padding: 2, color: colors.textPrimary}}
+      maxWidth={1344}
+      sx={{ mt: 0, minHeight: '100vh', padding: 2, color: colors.textPrimary, backgroundColor: 'transparent'}}
     >
-      <Typography  width={151} height={33} gutterBottom sx={{ color: colors.textPrimary }}>
+      <Typography  variant="h5" width={151} height={33} gutterBottom sx={{ color: colors.textPrimary }}>
         Admin Users
       </Typography>
       
@@ -167,14 +167,56 @@ export default function HomeComponent() {
           value={nameSearch}
           onChange={(e) => setNameSearch(e.target.value)}
           variant="outlined"
-          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, flex: 1 }}
+          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, 
+        
+          width: 348,
+            '& .MuiOutlinedInput-root': {
+              height: 44, 
+              '& fieldset': {
+                borderColor: '#909090',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#909090', // Maintain border color when focused
+              },
+            },
+            '& .MuiInputBase-input': {
+              color: colors.textPrimary, // Text color
+              padding: '10px 14px', // Adjust padding to fit height
+            },
+            '& .MuiInputLabel-root': {
+              color: colors.textSecondary, // Label color
+              top: '-2px', // Adjust label position to fit height
+            },
+            
+        }}
         />
         <TextField
           label="Search by Email"
           value={emailSearch}
           onChange={(e) => setEmailSearch(e.target.value)}
           variant="outlined"
-          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, flex: 1 }}
+          sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary }, 
+        
+          width: 348,
+          '& .MuiOutlinedInput-root': {
+            height: 44, 
+            '& fieldset': {
+              borderColor: '#909090',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#909090', // Maintain border color when focused
+            },
+          },
+          '& .MuiInputBase-input': {
+            color: colors.textPrimary, // Text color
+            padding: '10px 14px', // Adjust padding to fit height
+          },
+          '& .MuiInputLabel-root': {
+            color: colors.textSecondary, // Label color
+            top: '-2px', // Adjust label position to fit height
+          },
+          
+        }}
         />
         <Button variant="contained" onClick={() => handleOpenDialog()} sx={{ color: colors.textPrimary }}>
           Add User

@@ -20,9 +20,9 @@ export default function Header() {
           <Image src="/Project.png" alt="Project Logo" width={171} height={40} />
         </Box>
         {session && (
-          <Button color="inherit" onClick={() => signOut()} sx={{ color: colors.textPrimary }}>
-            Profile
-          </Button>
+          <IconButton color="inherit" onClick={() => signOut()} sx={{ color: colors.textPrimary, padding: 1 }}>
+          <Image src="/account_circle.png" alt="Profile" width={20} height={20} /> 
+          </IconButton>
         )}
       </Toolbar>
     </AppBar>

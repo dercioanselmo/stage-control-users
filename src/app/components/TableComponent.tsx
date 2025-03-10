@@ -47,7 +47,7 @@ export default function TableComponent({
 }: TableComponentProps) {
   return (
     <>
-      <Table >
+      <Table sx={{ width: '100%', maxWidth: '100%' }}>
         <TableHead>
           <TableRow sx={{ height: '40px' }}>
             <TableCell sx={{ color: colors.textPrimary }}>
