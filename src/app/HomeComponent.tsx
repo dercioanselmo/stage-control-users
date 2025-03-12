@@ -272,7 +272,7 @@ export default function HomeComponent() {
             color: colors.textPrimary, 
             borderRadius: 5,
             width: 480,
-            height: 365,
+            height: 335,
             padding: 3,
             border: '1px solid white',
             borderColor: '#909090'
@@ -291,39 +291,8 @@ export default function HomeComponent() {
               {errorMessage}
             </Alert>
           )}
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Full Name"
-            type="text"
-            fullWidth
-            value={currentUser.fullName}
-            onChange={(e) => setCurrentUser({ ...currentUser, fullName: e.target.value })}
-           
-            sx={{
-              width: 348,
-              '& .MuiOutlinedInput-root': {
-                height: 44,
-                '& fieldset': {
-                  borderColor: '#909090',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#909090', // Maintain border color on hover
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#909090',
-                },
-              },
-              '& .MuiInputBase-input': {
-                color: colors.textPrimary,
-                padding: '10px 14px',
-              },
-              '& .MuiInputLabel-root': {
-                color: colors.textSecondary,
-                top: '-2px',
-              },
-            }}
-          />
+          
+      
           <TextField
             margin="dense"
             label="Email"
@@ -332,7 +301,7 @@ export default function HomeComponent() {
             value={currentUser.email}
             onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
             sx={{
-              width: 348,
+              width: 384,
               '& .MuiOutlinedInput-root': {
                 height: 44,
                 '& fieldset': {
@@ -361,9 +330,31 @@ export default function HomeComponent() {
             fullWidth
             value={currentUser.role}
             onChange={(e) => setCurrentUser({ ...currentUser, role: e.target.value })}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  backgroundColor: colors.background + ' !important', // Force black background (#0F0F0F)
+                  '& .MuiMenuItem-root': {
+                    color: colors.textPrimary, // White text (#fff)
+                    backgroundColor: colors.background, // Ensure each item matches (#0F0F0F)
+                  },
+                  '& .MuiMenuItem-root:hover': {
+                    backgroundColor: '#1F1F1F', // Slightly lighter on hover
+                    color: colors.textPrimary,
+                  },
+                  '& .MuiMenuItem-root.Mui-selected': {
+                    backgroundColor: '#2F2F2F', // Slightly different for selected
+                    color: colors.textPrimary,
+                  },
+                  '& .MuiMenuItem-root.Mui-selected:hover': {
+                    backgroundColor: '#2F2F2F', // Keep selected hover consistent
+                  },
+                },
+              },
+            }}
             sx={{
-              marginTop: 2,
-              width: 348,
+              marginTop: 4,
+              width: 384,
               '& .MuiOutlinedInput-root': {
                 height: 44,
                 '& fieldset': {
@@ -375,31 +366,39 @@ export default function HomeComponent() {
                 '&.Mui-focused fieldset': {
                   borderColor: '#909090',
                 },
-                },
-                '& .MuiInputBase-input': {
-                  color: colors.textPrimary,
-                  padding: '10px 14px',
-                },
-                '& .MuiInputLabel-root': {
-                  color: colors.textSecondary,
-                  top: '-2px',
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#909090',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#909090', // Ensure hover state consistency
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#909090', // Ensure focused state consistency
-                },
+              },
+              '& .MuiInputBase-input': {
+                color: colors.textPrimary, // White text (#fff)
+                padding: '10px 14px',
+              },
+              '& .MuiInputLabel-root': {
+                color: colors.textPrimary + ' !important', // Default to white (#fff)
+                top: '-2px',
+              },
+              '&:hover .MuiInputLabel-root': {
+                color: colors.textPrimary + ' !important', // White on hover
+              },
+              '&.Mui-focused .MuiInputLabel-root': {
+                color: colors.textPrimary + ' !important', // White when focused
+              },
+              '& .MuiInputLabel-shrink': {
+                color: colors.textPrimary + ' !important', // White when shrunk
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#909090',
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#909090', // Ensure hover state consistency
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#909090', // Ensure focused state consistency
+              },
             }}
           >
-            
-            <MenuItem value="Admin">Admin</MenuItem>
-            <MenuItem value="Super Admin">Super Admin</MenuItem>
-            <MenuItem value="Moderator">Moderator</MenuItem>
-          </Select>
+          <MenuItem value="Admin">Admin</MenuItem>
+          <MenuItem value="Super Admin">Super Admin</MenuItem>
+          <MenuItem value="Moderator">Moderator</MenuItem>
+        </Select>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center' }}>
         <CustomButton
