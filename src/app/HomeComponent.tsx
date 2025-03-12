@@ -5,17 +5,18 @@ import {
   Container,
   Typography,
   TextField,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Alert,
   IconButton,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import Image from 'next/image'; // Import Image component for the icon
 import TableComponent from './components/TableComponent';
+import CustomButton from './components/CustomButton';
 
 const colors = {
   background: '#0F0F0F',
@@ -190,6 +191,9 @@ export default function HomeComponent() {
                 '& fieldset': {
                   borderColor: '#909090',
                 },
+                '&:hover fieldset': {
+                borderColor: '#909090',
+              },
                 '&.Mui-focused fieldset': {
                   borderColor: '#909090',
                 },
@@ -216,6 +220,9 @@ export default function HomeComponent() {
                 '& fieldset': {
                   borderColor: '#909090',
                 },
+                '&:hover fieldset': {
+                  borderColor: '#909090', 
+                },
                 '&.Mui-focused fieldset': {
                   borderColor: '#909090',
                 },
@@ -231,57 +238,49 @@ export default function HomeComponent() {
             }}
           />
         </div>
-        <Button variant="contained" onClick={() => handleOpenDialog()} sx={{ color: colors.textPrimary }}>
-          Add User
-        </Button>
-        <Button
-          variant="contained"
-          sx={{
-            width: 178,
-            height: 40,
-            backgroundColor: '#FFFFFF', // White background
-            color: '#000000', // Black text
-            borderRadius: 30, // Corner radius of 30px
-            opacity: 1, // 100% opacity
-            '&:hover': {
-              backgroundColor: '#FFFFFF', // Maintain white on hover
-              opacity: 0.9, // Slight opacity change on hover (optional)
-            },
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 4, // Reduced gap between text and icon
-            padding: '0 16px', // Adjust padding to fit content within 178px
-            fontSize: '16px', // Ag Desktop/Buttons/Large font size
-            fontWeight: 600, // Bold weight for Large button text
-            lineHeight: '40px', // Match button height for vertical centering
-            textTransform: 'none', // Remove uppercase transformation
-          }}
-          onClick={() => {}} // Placeholder action (to be implemented later)
-        >
-          Invite User
-          <Image src="/person_add.png" alt="Invite User" width={20} height={20} /> {/* Add person_add.png icon */}
-        </Button>
-      </div>
-      <TableComponent
-        users={users}
-        total={total}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        sortConfig={sortConfig}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        onEdit={handleOpenDialog}
-        onDelete={deleteUser}
-        requestSort={requestSort}
-      />
+        
+        <CustomButton
+          buttonColor="#FFFFFF"
+          textColor="#000000"
+          text="Invite User"
+          icon="/person_add.png"
+          width='178'
+          onClick={() => handleOpenDialog()} // Placeholder action (to be implemented later)
+        />
+        
+      </div >
+      <div style={{ marginTop: 36 }}> 
+        <TableComponent
+          users={users}
+          total={total}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          sortConfig={sortConfig}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          onEdit={handleOpenDialog}
+          onDelete={deleteUser}
+          requestSort={requestSort}
+        />
+      </div >
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        sx={{ '& .MuiDialog-paper': { backgroundColor: colors.background, color: colors.textPrimary } }}
+        sx={{ 
+          '& .MuiDialog-paper': { 
+            backgroundColor: colors.background, 
+            color: colors.textPrimary, 
+            borderRadius: 5,
+            width: 480,
+            height: 365,
+            padding: 3,
+            border: '1px solid white',
+            borderColor: '#909090'
+          } 
+        }}
       >
         <DialogTitle sx={{ color: colors.textPrimary, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {currentUser._id ? 'Edit User' : 'Add User'}
+          {currentUser._id ? 'Edit User' : 'Invite User'}
           <IconButton onClick={handleCloseDialog} sx={{ color: colors.textPrimary }}>
             <CloseIcon />
           </IconButton>
@@ -300,7 +299,30 @@ export default function HomeComponent() {
             fullWidth
             value={currentUser.fullName}
             onChange={(e) => setCurrentUser({ ...currentUser, fullName: e.target.value })}
-            sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary } }}
+           
+            sx={{
+              width: 348,
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                '& fieldset': {
+                  borderColor: '#909090',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#909090', // Maintain border color on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#909090',
+                },
+              },
+              '& .MuiInputBase-input': {
+                color: colors.textPrimary,
+                padding: '10px 14px',
+              },
+              '& .MuiInputLabel-root': {
+                color: colors.textSecondary,
+                top: '-2px',
+              },
+            }}
           />
           <TextField
             margin="dense"
@@ -309,25 +331,95 @@ export default function HomeComponent() {
             fullWidth
             value={currentUser.email}
             onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
-            sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary } }}
+            sx={{
+              width: 348,
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                '& fieldset': {
+                  borderColor: '#909090',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#909090',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#909090',
+                },
+              },
+              '& .MuiInputBase-input': {
+                color: colors.textPrimary,
+                padding: '10px 14px',
+              },
+              '& .MuiInputLabel-root': {
+                color: colors.textSecondary,
+                top: '-2px',
+              },
+            }}
           />
-          <TextField
-            margin="dense"
+          
+          <Select
             label="Role"
-            type="text"
             fullWidth
             value={currentUser.role}
             onChange={(e) => setCurrentUser({ ...currentUser, role: e.target.value })}
-            sx={{ input: { color: colors.textPrimary }, label: { color: colors.textSecondary } }}
-          />
+            sx={{
+              marginTop: 2,
+              width: 348,
+              '& .MuiOutlinedInput-root': {
+                height: 44,
+                '& fieldset': {
+                  borderColor: '#909090',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#909090', // Maintain border color on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#909090',
+                },
+                },
+                '& .MuiInputBase-input': {
+                  color: colors.textPrimary,
+                  padding: '10px 14px',
+                },
+                '& .MuiInputLabel-root': {
+                  color: colors.textSecondary,
+                  top: '-2px',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#909090',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#909090', // Ensure hover state consistency
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#909090', // Ensure focused state consistency
+                },
+            }}
+          >
+            
+            <MenuItem value="Admin">Admin</MenuItem>
+            <MenuItem value="Super Admin">Super Admin</MenuItem>
+            <MenuItem value="Moderator">Moderator</MenuItem>
+          </Select>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} sx={{ color: colors.textPrimary }}>
-            Cancel
-          </Button>
-          <Button onClick={saveUser} variant="contained">
-            {currentUser._id ? 'Save' : 'Add'}
-          </Button>
+        <DialogActions sx={{ justifyContent: 'center' }}>
+        <CustomButton
+          buttonColor="#000000"
+          textColor="#FFFFFF"
+          text="Cancel"
+          icon=""
+          width='118px'
+          onClick={() => handleCloseDialog()} 
+        />
+
+        <CustomButton
+          buttonColor="#FFFFFF"
+          textColor="#000000"
+          text={currentUser._id ? 'Save' : 'Invite'}
+          icon=""
+          width='118px'
+          onClick={saveUser} 
+        />
+
         </DialogActions>
       </Dialog>
     </Container>
