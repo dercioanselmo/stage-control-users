@@ -13,25 +13,34 @@ async function connectToDatabase() {
   }
 }
 
-export async function GET(request: NextRequest) {
+interface User {
+  fullName: string;
+  email: string;
+  role: string;
+  _id: string;
+}
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const skip = (page - 1) * limit;
-    const nameSearch = searchParams.get('name') || '';
-    const emailSearch = searchParams.get('email') || '';
-    const sort = searchParams.get('sort') || 'fullName'; // Default sort field
-    const direction = searchParams.get('direction') || 'asc'; // Default direction
+    const fullName = searchParams.get('fullName') || '';
+    const email = searchParams.get('email') || '';
+    const role = searchParams.get('role') || '';
+    const sort = (searchParams.get('sort') as keyof User) || 'fullName';
+    const direction = (searchParams.get('direction') as 'asc' | 'desc') || 'asc';
 
-    const query: any = {};
-    if (nameSearch) query.fullName = { $regex: nameSearch, $options: 'i' };
-    if (emailSearch) query.email = { $regex: emailSearch, $options: 'i' };
+    const query: Partial<Record<keyof User, { $regex: string; $options: string }>> = {};
+    if (fullName) query.fullName = { $regex: fullName, $options: 'i' };
+    if (email) query.email = { $regex: email, $options: 'i' };
+    if (role) query.role = { $regex: role, $options: 'i' };
 
     const collection = await connectToDatabase();
     const users = await collection
       .find(query)
-      .sort({ [sort]: direction === 'asc' ? 1 : -1 }) // Sort based on query params
+      .sort({ [sort]: direction === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(limit)
       .toArray();
@@ -39,7 +48,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ users, total });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Error fetching users:', (error as Error).message);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
